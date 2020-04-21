@@ -20,13 +20,11 @@ function checkIdExists(req, res, next) {
 }
 
 //Middleware to chek the creation of the projects, title and id have to be defined
-function checkRequired(req, res, next) {
-  const { id, title } = req.body;
+function checkRequiredId(req, res, next) {
+  const { id } = req.body;
 
   if (!id) {
     return res.status(400).json({ error: "Id is required" });
-  } else if (!title) {
-    return res.status(400).json({ error: "Title is required" });
   }
 
   return next();
@@ -34,7 +32,7 @@ function checkRequired(req, res, next) {
 
 //Middleware just to check the title
 function checkRequiredTitle(req, res, next) {
-  const { id, title } = req.body;
+  const { title } = req.body;
 
   if (!title) {
     return res.status(400).json({ error: "Title is required" });
@@ -56,12 +54,23 @@ function checkDuplicate(req, res, next) {
 }
 
 //Create Project
-routes.post("/projects", checkRequired, checkDuplicate, (req, res) => {
-  const { id, title, tasks } = req.body;
-  projects.push({ id, title, tasks });
+routes.post(
+  "/projects",
+  checkRequiredId,
+  checkRequiredTitle,
+  checkDuplicate,
+  (req, res) => {
+    const { id, title, tasks } = req.body;
+    const project = {
+      id,
+      title,
+      tasks,
+    };
+    projects.push(project);
 
-  return res.json(projects);
-});
+    return res.json(project);
+  }
+);
 
 //List Project
 routes.get("/projects", (req, res) => {
